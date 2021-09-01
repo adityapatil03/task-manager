@@ -3,6 +3,7 @@ package ch.taskmanager.model;
 import ch.taskmanager.application.TaskManager;
 import ch.taskmanager.model.Priority;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -10,7 +11,9 @@ import java.util.Date;
  * identifier (PID) and a priority (low, medium, high).
  * Lifecycle of a Process is handled by a Task Manager
  */
-public class Process {
+public class Process implements Serializable {
+
+    private static final long serialVersionUID = -6650396703627862469L;
 
     private final String processIdentifier;
 

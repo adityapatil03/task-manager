@@ -1,6 +1,6 @@
 package ch.taskmanager.model;
 
-import java.io.Serial;
+
 
 /**
  * Exception class to handle exceptions
@@ -8,7 +8,7 @@ import java.io.Serial;
  */
 public class ProcessManagerException extends RuntimeException {
 
-    @Serial
+
     private static final long serialVersionUID = 2021989461536218850L;
 
     private String errorCode;
