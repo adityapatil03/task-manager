@@ -20,23 +20,16 @@ public enum Handler {
     System.Logger LOGGER = System.getLogger(Handler.class.getName());
 
     /**
-     * @param priority Priority of the process to be started
+     * @param priority  Priority of the process to be started
      * @param forcePush (optional) If the maximum capacity has been reached, forcePush flag provides
      *                  option to remove the oldest process with FIFO method
      *                  or oldest low priority process and push the new process
-     * Handles ProcessManagerException thrown by Task Manager
+     *                  Handles ProcessManagerException thrown by Task Manager
      */
     public void addProcess(Priority priority, ForcePush... forcePush) {
-        String processIdentifier = null;
+
         try {
-            if (forcePush != null && forcePush.length > 0) {
-                if (LOGGER.isLoggable(System.Logger.Level.DEBUG)) {
-                    LOGGER.log(System.Logger.Level.DEBUG, "Force Push called with : " + forcePush[0] + " for priority "+ priority);
-                }
-                processIdentifier = taskManager.addProcess(priority, forcePush[0]);
-            } else {
-                processIdentifier = taskManager.addProcess(priority);
-            }
+            String processIdentifier = taskManager.addProcess(priority, forcePush);
 
             if (processIdentifier != null) {
                 LOGGER.log(System.Logger.Level.INFO, "Process added successfully with PID : " + processIdentifier);
@@ -56,7 +49,7 @@ public enum Handler {
 
     /**
      * @param identifier PID to be used to find and kill the process
-     * Handles ProcessManagerException thrown by Task Manager
+     *                   Handles ProcessManagerException thrown by Task Manager
      */
     public void killProcessWithPID(String identifier) throws ProcessManagerException {
         try {
@@ -73,7 +66,7 @@ public enum Handler {
 
     /**
      * @param priority Priority of the processes to be killed
-     * Handles ProcessManagerException thrown by Task Manager
+     *                 Handles ProcessManagerException thrown by Task Manager
      */
     public void killProcessWithPriority(Priority priority) throws ProcessManagerException {
         try {

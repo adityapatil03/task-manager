@@ -52,36 +52,41 @@ public enum TaskManager {
     }
 
     /**
-     * @param priority Priority of the process to be started
+     * @param priority  Priority of the process to be started
      * @param forcePush If the maximum capacity has been reached, forcePush flag provides
      *                  option to remove the oldest process with FIFO method
      *                  or oldest low priority process and push the new process
      * @return Unique process identifier PID
      */
-    public String addProcess(Priority priority, ForcePush forcePush) {
+    public String addProcess(Priority priority, ForcePush... forcePush) {
 
-        synchronized (lockQueue) {
-            if (processes.size() == maximumCapacity) {
-                if (ForcePush.PUSH_FIFO.name().equals(forcePush.name())) {
-                    processes.poll();
-                } else if (ForcePush.PUSH_PRIORITY.name().equals(forcePush.name())) {
-                    if (priority.name().equals(Priority.HIGH.name()) || priority.name().equals(Priority.MEDIUM.name())) {
-                        boolean isHigher = true;
-                        Process lastLowPriorityProcess = null;
-                        for (Process process : processes) {
-                            if (priority.rank <= process.getPriority().rank) {
-                                isHigher = false;
-                                break;
+        if (forcePush != null && forcePush.length > 0) {
+            if (LOGGER.isLoggable(System.Logger.Level.DEBUG)) {
+                LOGGER.log(System.Logger.Level.DEBUG, "Force Push called with : " + forcePush[0] + " for priority " + priority);
+            }
+            synchronized (lockQueue) {
+                if (processes.size() == maximumCapacity) {
+                    if (ForcePush.PUSH_FIFO.name().equals(forcePush[0].name())) {
+                        processes.poll();
+                    } else if (ForcePush.PUSH_PRIORITY.name().equals(forcePush[0].name())) {
+                        if (priority.name().equals(Priority.HIGH.name()) || priority.name().equals(Priority.MEDIUM.name())) {
+                            boolean isHigher = true;
+                            Process lastLowPriorityProcess = null;
+                            for (Process process : processes) {
+                                if (priority.rank <= process.getPriority().rank) {
+                                    isHigher = false;
+                                    break;
+                                }
+
+                                if (lastLowPriorityProcess == null || process.getPriority().rank < lastLowPriorityProcess.getPriority().rank) {
+                                    lastLowPriorityProcess = process;
+
+                                }
+
                             }
-
-                            if (lastLowPriorityProcess == null || process.getPriority().rank < lastLowPriorityProcess.getPriority().rank) {
-                                lastLowPriorityProcess = process;
-
+                            if (isHigher && lastLowPriorityProcess != null) {
+                                processes.remove(lastLowPriorityProcess);
                             }
-
-                        }
-                        if (isHigher && lastLowPriorityProcess != null) {
-                            processes.remove(lastLowPriorityProcess);
                         }
                     }
                 }
